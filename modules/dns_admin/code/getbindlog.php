@@ -13,26 +13,26 @@ if (!isset($_SESSION['zpuid'])) {
 		$bindlog = "/var/sentora/logs/bind/bind.log";
 		if ($_POST['inBindLog'] == $bindlog) {
 		
-        	$bindlog = str_replace('..', '__', $_POST['inBindLog']); // Temporary fix until I can think of a better solution, this will however stop reverse iteration of the filesystem though by causing an error if '..'  eg. '../../' is requested.
-        	$logerror = array();
-        	$logwarning = array();
-        	$getlog = array();
-        	if (file_exists($bindlog)) {
-            	$handle = @fopen($bindlog, "r");
-            	$getlog = array();
-            	if ($handle) {
-                	while (!feof($handle)) {
-                    	$buffer = fgets($handle, 4096);
-                    	$getlog[] = $buffer;
-                    	if (strstr($buffer, 'error:') || strstr($buffer, 'error ')) {
-                        	$logerror[] = $buffer;
-                    	}
-                    	if (strstr($buffer, 'warning:') || strstr($buffer, 'warning ')) {
-                        	$logwarning[] = $buffer;
-                    	}
-                	}fclose($handle);
-            	}
-			}
+        		$bindlog = str_replace('..', '__', $_POST['inBindLog']); // Temporary fix until I can think of a better solution, this will however stop reverse iteration of the filesystem though by causing an error if '..'  eg. '../../' is requested.
+        		$logerror = array();
+        		$logwarning = array();
+        		$getlog = array();
+        		if (file_exists($bindlog)) {
+            		$handle = @fopen($bindlog, "r");
+            		$getlog = array();
+            		if ($handle) {
+                		while (!feof($handle)) {
+                    			$buffer = fgets($handle, 4096);
+                    			$getlog[] = $buffer;
+                    			if (strstr($buffer, 'error:') || strstr($buffer, 'error ')) {
+                        			$logerror[] = $buffer;
+                    			}
+                    			if (strstr($buffer, 'warning:') || strstr($buffer, 'warning ')) {
+                        			$logwarning[] = $buffer;
+                    			}
+                		}fclose($handle);
+            		}
+		}
         }
 
 
