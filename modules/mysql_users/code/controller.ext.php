@@ -648,22 +648,56 @@ class module_controller extends ctrl_module
         return self::ListUserDatabases($controller->GetControllerRequest('URL', 'other'));
     }
 
-    static function getisDeleteUser()
+    static function getisDeleteUser($uid = null)
     {
         global $controller;
+        global $zdbh;
+
         $urlvars = $controller->GetAllControllerRequests('URL');
-        if ((isset($urlvars['show'])) && ($urlvars['show'] == "Delete"))
-            return true;
-        return false;
+
+        // Verify if Current user can Edit MySQL Account.
+        // This shall avoid exposing mysql username based on ID lookups.
+        $currentuser = ctrl_users::GetUserDetail($uid);
+
+    	$sql = "SELECT * FROM x_mysql_users WHERE mu_acc_fk=:userid AND mu_id_pk=:editedUsrID AND mu_deleted_ts IS NULL";
+    	$numrows = $zdbh->prepare($sql);
+    	$numrows->bindParam(':userid', $currentuser['userid']);
+		$numrows->bindParam(':editedUsrID', $urlvars['other']);
+    	$numrows->execute();
+
+        if( $numrows->rowCount() == 0 ) {
+            return;
+        }
+
+        // Show User Info
+        return (isset($urlvars['show'])) && ($urlvars['show'] == "Delete");
+		
     }
 
-    static function getisEditUser()
+    static function getisEditUser($uid = null)
     {
+		
         global $controller;
-        $urlvars = $controller->GetAllControllerRequests('URL');
-        if ((isset($urlvars['show'])) && ($urlvars['show'] == "Edit"))
-            return true;
-        return false;
+        global $zdbh;
+
+        $urlvars     = $controller->GetAllControllerRequests('URL');
+
+        // Verify if Current user can Edit MySQL Account.
+        // This shall avoid exposing mysql username based on ID lookups.
+        $currentuser = ctrl_users::GetUserDetail($uid);
+
+    	$sql = "SELECT * FROM x_mysql_users WHERE mu_acc_fk=:userid AND mu_id_pk=:editedUsrID AND mu_deleted_ts IS NULL";
+    	$numrows = $zdbh->prepare($sql);
+    	$numrows->bindParam(':userid', $currentuser['userid']);
+		$numrows->bindParam(':editedUsrID', $urlvars['other']);
+    	$numrows->execute();
+
+        if( $numrows->rowCount() == 0 ) {
+            return;
+        }
+		
+        // Show User Info
+        return (isset($urlvars['show'])) && ($urlvars['show'] == "Edit");
     }
 
     static function getisCreateUser()
